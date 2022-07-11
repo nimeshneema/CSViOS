@@ -8,20 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		F72ECF3C2878EC770069C435 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F72ECF3B2878EC770069C435 /* AppDelegate.m */; };
-		F72ECF3F2878EC770069C435 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F72ECF3E2878EC770069C435 /* SceneDelegate.m */; };
 		F72ECF422878EC770069C435 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72ECF412878EC770069C435 /* ViewController.m */; };
 		F72ECF452878EC770069C435 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F72ECF432878EC770069C435 /* Main.storyboard */; };
 		F72ECF472878EC790069C435 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F72ECF462878EC790069C435 /* Assets.xcassets */; };
 		F72ECF4A2878EC790069C435 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F72ECF482878EC790069C435 /* LaunchScreen.storyboard */; };
 		F72ECF4D2878EC790069C435 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F72ECF4C2878EC790069C435 /* main.m */; };
+		F72ECF552878EDEA0069C435 /* CHCSVParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F72ECF542878EDEA0069C435 /* CHCSVParser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		F72ECF372878EC770069C435 /* CSViOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CSViOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F72ECF3A2878EC770069C435 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F72ECF3B2878EC770069C435 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		F72ECF3D2878EC770069C435 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
-		F72ECF3E2878EC770069C435 /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		F72ECF402878EC770069C435 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		F72ECF412878EC770069C435 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		F72ECF442878EC770069C435 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -29,6 +27,8 @@
 		F72ECF492878EC790069C435 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F72ECF4B2878EC790069C435 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F72ECF4C2878EC790069C435 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F72ECF532878EDEA0069C435 /* CHCSVParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHCSVParser.h; sourceTree = "<group>"; };
+		F72ECF542878EDEA0069C435 /* CHCSVParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHCSVParser.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,10 +61,10 @@
 		F72ECF392878EC770069C435 /* CSViOS */ = {
 			isa = PBXGroup;
 			children = (
+				F72ECF532878EDEA0069C435 /* CHCSVParser.h */,
+				F72ECF542878EDEA0069C435 /* CHCSVParser.m */,
 				F72ECF3A2878EC770069C435 /* AppDelegate.h */,
 				F72ECF3B2878EC770069C435 /* AppDelegate.m */,
-				F72ECF3D2878EC770069C435 /* SceneDelegate.h */,
-				F72ECF3E2878EC770069C435 /* SceneDelegate.m */,
 				F72ECF402878EC770069C435 /* ViewController.h */,
 				F72ECF412878EC770069C435 /* ViewController.m */,
 				F72ECF432878EC770069C435 /* Main.storyboard */,
@@ -146,10 +146,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F72ECF552878EDEA0069C435 /* CHCSVParser.m in Sources */,
 				F72ECF422878EC770069C435 /* ViewController.m in Sources */,
 				F72ECF3C2878EC770069C435 /* AppDelegate.m in Sources */,
 				F72ECF4D2878EC790069C435 /* main.m in Sources */,
-				F72ECF3F2878EC770069C435 /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

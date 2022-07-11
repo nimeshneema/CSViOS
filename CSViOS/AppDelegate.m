@@ -15,26 +15,108 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    self.combinedAddresses = [[NSMutableArray alloc] init];
+    self.fullAddress = [[NSMutableString alloc] init];
+    self.lines = [[NSMutableArray alloc] init];
+    
+    self.address1 = nil;
+    self.address2 = nil;
+    self.address3 = nil;
+    
+    NSString *combinedFilePath = [[NSBundle mainBundle] pathForResource:@"combined" ofType:@"csv"];
+    NSString *ppCompleteFilePath = [[NSBundle mainBundle] pathForResource:@"pp-complete" ofType:@"csv"];
+     
+    self.combinedParser = [[CHCSVParser alloc] initWithContentsOfCSVURL:[NSURL fileURLWithPath:combinedFilePath]];
+    self.combinedParser.delegate = self;
+    
+    self.ppCompleteParser = [[CHCSVParser alloc] initWithContentsOfCSVURL:[NSURL fileURLWithPath:ppCompleteFilePath]];
+    self.ppCompleteParser.delegate = self;
+    
+    [self.combinedParser parse];
+    
     return YES;
 }
 
-
-#pragma mark - UISceneSession lifecycle
-
-
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
-    // Called when a new scene session is being created.
-    // Use this method to select a configuration to create the new scene with.
-    return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
+- (void)parser:(CHCSVParser *)parser didBeginLine:(NSUInteger)recordNumber {
+    
 }
 
-
-- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
-    // Called when the user discards a scene session.
-    // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-    // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+- (void)parser:(CHCSVParser *)parser didEndLine:(NSUInteger)recordNumber {
+    if (parser == self.combinedParser) {
+         // NSLog(@"DidEndLine: %ld, Added items: %ld", recordNumber, [self.combinedAddresses count]);
+    } else {
+        
+    }
 }
 
+- (void)parserDidBeginDocument:(CHCSVParser *)parser {
+    if (parser == self.combinedParser) {
+        NSLog(@"Begin combinedParser");
+    } else {
+        NSLog(@"Begin ppCompleteParser");
+    }
+}
+
+- (void)parserDidEndDocument:(CHCSVParser *)parser {
+    if (parser == self.combinedParser) {
+        NSLog(@"End combinedParser");
+        [self.ppCompleteParser parse];
+    } else {
+        NSLog(@"End ppCompleteParser");
+        NSLog(@"%@", self.lines);
+    }
+}
+
+- (void)parser:(CHCSVParser *)parser didReadField:(NSString *)field atIndex:(NSInteger)fieldIndex {
+    if (parser == self.combinedParser) {
+        if (fieldIndex == 81) {
+            if (field != nil && field.length > 0) {
+                NSString *fieldString = field;
+                
+                NSError *error = nil;
+                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:&error];
+                NSString *trimmedString = [regex stringByReplacingMatchesInString:fieldString options:0 range:NSMakeRange(0, [fieldString length]) withTemplate:@" "];
+                
+                [self.combinedAddresses addObject:[trimmedString substringWithRange:NSMakeRange(1, [trimmedString length] - 2)]];
+            }
+        }
+    } else {
+        switch (fieldIndex) {
+            case 7:
+                self.address1 = [field substringWithRange:NSMakeRange(1, [field length] - 2)];
+                break;
+            case 8:
+                self.address2 = [field substringWithRange:NSMakeRange(1, [field length] - 2)];
+                break;
+            case 9:
+                self.address3 = [field substringWithRange:NSMakeRange(1, [field length] - 2)];
+                break;
+            default:
+                break;
+        }
+        
+        if (fieldIndex == 10) {
+            self.fullAddress = [NSMutableString stringWithFormat:@"%@ %@ %@", self.address1, self.address2, self.address3];
+        
+            NSError *error = nil;
+            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:&error];
+            NSString *trimmedString = [regex stringByReplacingMatchesInString:self.fullAddress options:0 range:NSMakeRange(0, [self.fullAddress length]) withTemplate:@" "];
+            self.fullAddress = [NSMutableString stringWithString:trimmedString];
+            
+            [self checkAddress];
+        }
+    }
+    
+    return;
+}
+
+- (void)checkAddress {
+    for (int i = 1; i <= [self.combinedAddresses count]; i++) {
+        if ([self.fullAddress isEqualToString:[self.combinedAddresses objectAtIndex:(i-1)]]) {
+            [self.lines addObject:[NSNumber numberWithInt:i]];
+            NSLog(@"%d: %@", i, self.fullAddress);
+        }
+    }
+}
 
 @end
