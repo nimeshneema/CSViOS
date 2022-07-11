@@ -15,13 +15,16 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    self.combinedAddresses = [[NSMutableArray alloc] init];
+    self.combinedFullAddresses = [[NSMutableArray alloc] init];
+    self.currentAddress = nil;
+    
     self.fullAddress = [[NSMutableString alloc] init];
-    self.lines = [[NSMutableArray alloc] init];
     
     self.address1 = nil;
     self.address2 = nil;
     self.address3 = nil;
+    
+    self.currentLine = 0;
     
     NSString *combinedFilePath = [[NSBundle mainBundle] pathForResource:@"combined" ofType:@"csv"];
     NSString *ppCompleteFilePath = [[NSBundle mainBundle] pathForResource:@"pp-complete" ofType:@"csv"];
@@ -37,23 +40,27 @@
     return YES;
 }
 
-- (void)parser:(CHCSVParser *)parser didBeginLine:(NSUInteger)recordNumber {
-    
-}
-
-- (void)parser:(CHCSVParser *)parser didEndLine:(NSUInteger)recordNumber {
-    if (parser == self.combinedParser) {
-         // NSLog(@"DidEndLine: %ld, Added items: %ld", recordNumber, [self.combinedAddresses count]);
-    } else {
-        
-    }
-}
-
 - (void)parserDidBeginDocument:(CHCSVParser *)parser {
     if (parser == self.combinedParser) {
         NSLog(@"Begin combinedParser");
     } else {
         NSLog(@"Begin ppCompleteParser");
+    }
+}
+
+- (void)parser:(CHCSVParser *)parser didBeginLine:(NSUInteger)recordNumber {
+    if (parser == self.ppCompleteParser) {
+        self.currentLine = recordNumber;
+    } else {
+        
+    }
+}
+
+- (void)parser:(CHCSVParser *)parser didEndLine:(NSUInteger)recordNumber {
+    if (parser == self.combinedParser) {
+          NSLog(@"CombinedParser Line#: %ld, \"%@\"",recordNumber, self.currentAddress);
+    } else {
+        
     }
 }
 
@@ -63,7 +70,6 @@
         [self.ppCompleteParser parse];
     } else {
         NSLog(@"End ppCompleteParser");
-        NSLog(@"%@", self.lines);
     }
 }
 
@@ -77,7 +83,8 @@
                 NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:&error];
                 NSString *trimmedString = [regex stringByReplacingMatchesInString:fieldString options:0 range:NSMakeRange(0, [fieldString length]) withTemplate:@" "];
                 
-                [self.combinedAddresses addObject:[trimmedString substringWithRange:NSMakeRange(1, [trimmedString length] - 2)]];
+                self.currentAddress = [trimmedString substringWithRange:NSMakeRange(1, [trimmedString length] - 2)];
+                [self.combinedFullAddresses addObject:[trimmedString substringWithRange:NSMakeRange(1, [trimmedString length] - 2)]];
             }
         }
     } else {
@@ -96,7 +103,33 @@
         }
         
         if (fieldIndex == 10) {
-            self.fullAddress = [NSMutableString stringWithFormat:@"%@ %@ %@", self.address1, self.address2, self.address3];
+            if (self.address1.length != 0) {
+                [self.fullAddress appendString:self.address1];
+                
+                if (self.address2.length != 0) {
+                    [self.fullAddress appendFormat:@", %@", self.address2];
+                    
+                    if (self.address3.length != 0) {
+                        [self.fullAddress appendFormat:@", %@", self.address3];
+                    }
+                } else {
+                    if (self.address3.length != 0) {
+                        [self.fullAddress appendFormat:@", %@", self.address3];
+                    }
+                }
+            } else {
+                if (self.address2.length != 0) {
+                    [self.fullAddress appendString:self.address2];
+                    
+                    if (self.address3.length != 0) {
+                        [self.fullAddress appendFormat:@", %@", self.address3];
+                    }
+                } else {
+                    if (self.address3.length != 0) {
+                        [self.fullAddress appendString:self.address3];
+                    }
+                }
+            }
         
             NSError *error = nil;
             NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:&error];
@@ -111,12 +144,18 @@
 }
 
 - (void)checkAddress {
-    for (int i = 1; i <= [self.combinedAddresses count]; i++) {
-        if ([self.fullAddress isEqualToString:[self.combinedAddresses objectAtIndex:(i-1)]]) {
-            [self.lines addObject:[NSNumber numberWithInt:i]];
-            NSLog(@"%d: %@", i, self.fullAddress);
+    // NSLog(@"Searching Constructed Address: %@", self.fullAddress);
+    
+    for (NSUInteger i = 1; i <= [self.combinedFullAddresses count]; i++) {
+        NSString *combinedFullAddressLowercased = [self.combinedFullAddresses[i-1] lowercaseString];
+        NSString *fullAddressLowercased = [self.fullAddress lowercaseString];
+        
+        if ([combinedFullAddressLowercased containsString:fullAddressLowercased]) {
+            NSLog(@"combined.csv: %ld, pp-complete.csv: %ld : %@", i, self.currentLine, self.fullAddress);
         }
     }
+    
+    self.fullAddress = [[NSMutableString alloc] init];
 }
 
 @end

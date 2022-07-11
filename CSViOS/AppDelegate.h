@@ -12,13 +12,18 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
-@property (strong, nonatomic) NSMutableArray *combinedAddresses;
+    // Extracts data from combined.csv
+@property (strong, nonatomic) NSMutableArray *combinedFullAddresses;
+@property (strong, nonatomic) NSString *currentAddress;
 
+    // Extracts data from pp-complete.csv
 @property (strong, nonatomic) NSMutableString *fullAddress;
-@property (strong, nonatomic) NSMutableArray *lines;
+
 @property (strong, nonatomic) NSString *address1;
 @property (strong, nonatomic) NSString *address2;
 @property (strong, nonatomic) NSString *address3;
+
+@property (nonatomic) NSUInteger currentLine;
 
 @property (strong, nonatomic) CHCSVParser *combinedParser;
 @property (strong, nonatomic) CHCSVParser *ppCompleteParser;
