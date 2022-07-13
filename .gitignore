@@ -1,0 +1,57 @@
+# Ignore .DS_Store files anywhere in the repo.
+.DS_Store
+# Ignore files starting with ._ anywhere in the repo.
+._*
+
+
+
+# Ignore the contents of the following directories anywhere in the repo.
+Submodules/
+build/
+.build/
+DerivedData/
+
+
+
+# Ignore the following file patterns, but do not ignore the following file which negates the pattern
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+
+
+# Ignore the contents of xcuserdata directory anywhere in the repo.
+xcuserdata/
+
+
+
+# Ignore the files with the following extensions anywhere in the repo. Metadata files created by Xcode.
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+
+
+# Ignore the files with the following extensions anywhere in the repo. Files produced by Xcode corresponding to build actions.
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+
+
+# Ignore the following specific file names.
+timeline.xctimeline
+playground.xcworkspace
+
+
+# Ignore all the CocoaPods related files except the files that track the Xcode project.
+# An interesting discussion here:
+# https://stackoverflow.com/q/9446644/6995250
+**/Pods/*
+!*.xcodeproj
