@@ -7,7 +7,23 @@
 
 #import "AppDelegate.h"
 
-@interface AppDelegate ()
+@interface AppDelegate () <CHCSVParserDelegate>
+
+    // Extract data from combined.csv
+@property (strong, nonatomic) NSMutableArray *combinedCSVAllAddresses;
+@property (strong, nonatomic) NSString *combinedCSVcurrentlyReadAddress;
+
+    // Find matches from pp-complete.csv
+@property (strong, nonatomic) NSMutableString *ppCompleteCSVFullyConstructedAddress;
+
+@property (strong, nonatomic) NSString *ppCompleteCSVAddress1;
+@property (strong, nonatomic) NSString *ppCompleteCSVAddress2;
+@property (strong, nonatomic) NSString *ppCompleteCSVAddress3;
+
+@property (nonatomic) NSUInteger ppCompleteCSVCurrentLine;
+
+@property (strong, nonatomic) CHCSVParser *combinedParser;
+@property (strong, nonatomic) CHCSVParser *ppCompleteParser;
 
 @end
 
@@ -15,23 +31,22 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    self.combinedFullAddresses = [[NSMutableArray alloc] init];
-    self.currentAddress = nil;
+    self.combinedCSVAllAddresses = [[NSMutableArray alloc] init];
+    self.combinedCSVcurrentlyReadAddress = nil;
     
-    self.fullAddress = [[NSMutableString alloc] init];
+    self.ppCompleteCSVFullyConstructedAddress = [[NSMutableString alloc] init];
     
-    self.address1 = nil;
-    self.address2 = nil;
-    self.address3 = nil;
+    self.ppCompleteCSVAddress1 = nil;
+    self.ppCompleteCSVAddress2 = nil;
+    self.ppCompleteCSVAddress3 = nil;
     
-    self.currentLine = 0;
+    self.ppCompleteCSVCurrentLine = 0;
     
     NSString *combinedFilePath = [[NSBundle mainBundle] pathForResource:@"combined" ofType:@"csv"];
-    NSString *ppCompleteFilePath = [[NSBundle mainBundle] pathForResource:@"pp-complete" ofType:@"csv"];
-     
     self.combinedParser = [[CHCSVParser alloc] initWithContentsOfCSVURL:[NSURL fileURLWithPath:combinedFilePath]];
     self.combinedParser.delegate = self;
     
+    NSString *ppCompleteFilePath = [[NSBundle mainBundle] pathForResource:@"pp-complete" ofType:@"csv"];
     self.ppCompleteParser = [[CHCSVParser alloc] initWithContentsOfCSVURL:[NSURL fileURLWithPath:ppCompleteFilePath]];
     self.ppCompleteParser.delegate = self;
     
@@ -49,14 +64,18 @@
 }
 
 - (void)parser:(CHCSVParser *)parser didBeginLine:(NSUInteger)recordNumber {
-    if (parser == self.ppCompleteParser) {
-        self.currentLine = recordNumber;
+    if (parser == self.combinedParser) {
+        
+    } else {
+        self.ppCompleteCSVCurrentLine = recordNumber;
     }
 }
 
 - (void)parser:(CHCSVParser *)parser didEndLine:(NSUInteger)recordNumber {
     if (parser == self.combinedParser) {
-        // NSLog(@"CombinedParser Line#: %ld, \"%@\"",recordNumber, self.currentAddress);
+        // NSLog(@"CombinedParser Line#: %ld, %@", recordNumber, self.combinedCSVcurrentlyReadAddress);
+    } else {
+        
     }
 }
 
@@ -79,58 +98,59 @@
                 NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:&error];
                 NSString *trimmedString = [regex stringByReplacingMatchesInString:fieldString options:0 range:NSMakeRange(0, [fieldString length]) withTemplate:@" "];
                 
-                self.currentAddress = [trimmedString stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-                [self.combinedFullAddresses addObject:self.currentAddress];
+                self.combinedCSVcurrentlyReadAddress = [trimmedString stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+            } else {
+                self.combinedCSVcurrentlyReadAddress = @"";
             }
+            [self.combinedCSVAllAddresses addObject:self.combinedCSVcurrentlyReadAddress];
         }
     } else {
         switch (fieldIndex) {
             case 7:
-                self.address1 = [field substringWithRange:NSMakeRange(1, [field length] - 2)];
+                self.ppCompleteCSVAddress1 = [field substringWithRange:NSMakeRange(1, [field length] - 2)];
                 break;
             case 8:
-                self.address2 = [field substringWithRange:NSMakeRange(1, [field length] - 2)];
+                self.ppCompleteCSVAddress2 = [field substringWithRange:NSMakeRange(1, [field length] - 2)];
                 break;
             case 9:
-                self.address3 = [field substringWithRange:NSMakeRange(1, [field length] - 2)];
+                self.ppCompleteCSVAddress3 = [field substringWithRange:NSMakeRange(1, [field length] - 2)];
                 break;
             default:
                 break;
         }
         
         if (fieldIndex == 10) {
-            if (self.address1.length != 0) {
-                [self.fullAddress appendString:self.address1];
+            if (self.ppCompleteCSVAddress1.length != 0) {
+                [self.ppCompleteCSVFullyConstructedAddress appendString:self.ppCompleteCSVAddress1];
                 
-                if (self.address2.length != 0) {
-                    [self.fullAddress appendFormat:@", %@", self.address2];
+                if (self.ppCompleteCSVAddress2.length != 0) {
+                    [self.ppCompleteCSVFullyConstructedAddress appendFormat:@", %@", self.ppCompleteCSVAddress2];
                     
-                    if (self.address3.length != 0) {
-                        [self.fullAddress appendFormat:@", %@", self.address3];
+                    if (self.ppCompleteCSVAddress3.length != 0) {
+                        [self.ppCompleteCSVFullyConstructedAddress appendFormat:@", %@", self.ppCompleteCSVAddress3];
                     }
                 } else {
-                    if (self.address3.length != 0) {
-                        [self.fullAddress appendFormat:@", %@", self.address3];
+                    if (self.ppCompleteCSVAddress3.length != 0) {
+                        [self.ppCompleteCSVFullyConstructedAddress appendFormat:@", %@", self.ppCompleteCSVAddress3];
                     }
                 }
             } else {
-                if (self.address2.length != 0) {
-                    [self.fullAddress appendString:self.address2];
+                if (self.ppCompleteCSVAddress2.length != 0) {
+                    [self.ppCompleteCSVFullyConstructedAddress appendString:self.ppCompleteCSVAddress2];
                     
-                    if (self.address3.length != 0) {
-                        [self.fullAddress appendFormat:@", %@", self.address3];
+                    if (self.ppCompleteCSVAddress3.length != 0) {
+                        [self.ppCompleteCSVFullyConstructedAddress appendFormat:@", %@", self.ppCompleteCSVAddress3];
                     }
                 } else {
-                    if (self.address3.length != 0) {
-                        [self.fullAddress appendString:self.address3];
+                    if (self.ppCompleteCSVAddress3.length != 0) {
+                        [self.ppCompleteCSVFullyConstructedAddress appendString:self.ppCompleteCSVAddress3];
                     }
                 }
             }
         
             NSError *error = nil;
             NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:&error];
-            NSString *trimmedString = [regex stringByReplacingMatchesInString:self.fullAddress options:0 range:NSMakeRange(0, [self.fullAddress length]) withTemplate:@" "];
-            self.fullAddress = [NSMutableString stringWithString:trimmedString];
+            self.ppCompleteCSVFullyConstructedAddress = [NSMutableString stringWithString:[regex stringByReplacingMatchesInString:self.ppCompleteCSVFullyConstructedAddress options:0 range:NSMakeRange(0, [self.ppCompleteCSVFullyConstructedAddress length]) withTemplate:@" "]];
             
             [self checkAddress];
         }
@@ -140,17 +160,17 @@
 }
 
 - (void)checkAddress {
-    for (NSUInteger i = 1; i <= [self.combinedFullAddresses count]; i++) {
-        NSString *combinedFullAddressLowercased = [self.combinedFullAddresses[i-1] lowercaseString];
-        NSString *fullAddressLowercased = [self.fullAddress lowercaseString];
+    for (NSUInteger i = 1; i <= [self.combinedCSVAllAddresses count]; i++) {
+        NSString *combinedFullAddressLowercased = [self.combinedCSVAllAddresses[i-1] lowercaseString];
+        NSString *fullAddressLowercased = [self.ppCompleteCSVFullyConstructedAddress lowercaseString];
         
         if ([combinedFullAddressLowercased isEqualToString:fullAddressLowercased]) {
-            NSLog(@"combined.csv: %ld, pp-complete.csv: %ld : %@", i+1, self.currentLine, fullAddressLowercased);
+            NSLog(@"combined.csv: %ld, pp-complete.csv: %ld : %@", i+1, self.ppCompleteCSVCurrentLine, fullAddressLowercased);
         }
         
     }
     
-    self.fullAddress = [[NSMutableString alloc] init];
+    self.ppCompleteCSVFullyConstructedAddress = [[NSMutableString alloc] init];
 }
 
 @end
