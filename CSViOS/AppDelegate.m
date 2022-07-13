@@ -75,7 +75,7 @@
 
 - (void)parser:(CHCSVParser *)parser didReadField:(NSString *)field atIndex:(NSInteger)fieldIndex {
     if (parser == self.combinedParser) {
-        if (fieldIndex == 81) {
+        if (fieldIndex == 1) {
             if (field != nil && field.length > 0) {
                 NSString *fieldString = field;
                 
@@ -150,9 +150,10 @@
         NSString *combinedFullAddressLowercased = [self.combinedFullAddresses[i-1] lowercaseString];
         NSString *fullAddressLowercased = [self.fullAddress lowercaseString];
         
-        if ([combinedFullAddressLowercased containsString:fullAddressLowercased]) {
-            NSLog(@"combined.csv: %ld, pp-complete.csv: %ld : %@", i, self.currentLine, self.fullAddress);
+        if ([combinedFullAddressLowercased isEqualToString:fullAddressLowercased]) {
+            NSLog(@"combined.csv: %ld, pp-complete.csv: %ld : %@", i+1, self.currentLine, self.fullAddress);
         }
+        
     }
     
     self.fullAddress = [[NSMutableString alloc] init];
