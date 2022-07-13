@@ -48,21 +48,21 @@
     }
 }
 
-- (void)parser:(CHCSVParser *)parser didBeginLine:(NSUInteger)recordNumber {
-    if (parser == self.ppCompleteParser) {
-        self.currentLine = recordNumber;
-    } else {
-        
-    }
-}
-
-- (void)parser:(CHCSVParser *)parser didEndLine:(NSUInteger)recordNumber {
-    if (parser == self.combinedParser) {
-          NSLog(@"CombinedParser Line#: %ld, \"%@\"",recordNumber, self.currentAddress);
-    } else {
-        
-    }
-}
+//- (void)parser:(CHCSVParser *)parser didBeginLine:(NSUInteger)recordNumber {
+//    if (parser == self.ppCompleteParser) {
+//        self.currentLine = recordNumber;
+//    } else {
+//
+//    }
+//}
+//
+//- (void)parser:(CHCSVParser *)parser didEndLine:(NSUInteger)recordNumber {
+//    if (parser == self.combinedParser) {
+//        NSLog(@"CombinedParser Line#: %ld, \"%@\"",recordNumber, self.currentAddress);
+//    } else {
+//
+//    }
+//}
 
 - (void)parserDidEndDocument:(CHCSVParser *)parser {
     if (parser == self.combinedParser) {
@@ -144,14 +144,12 @@
 }
 
 - (void)checkAddress {
-    // NSLog(@"Searching Constructed Address: %@", self.fullAddress);
-    
     for (NSUInteger i = 1; i <= [self.combinedFullAddresses count]; i++) {
         NSString *combinedFullAddressLowercased = [self.combinedFullAddresses[i-1] lowercaseString];
         NSString *fullAddressLowercased = [self.fullAddress lowercaseString];
         
         if ([combinedFullAddressLowercased isEqualToString:fullAddressLowercased]) {
-            NSLog(@"combined.csv: %ld, pp-complete.csv: %ld : %@", i+1, self.currentLine, self.fullAddress);
+            NSLog(@"combined.csv: %ld, pp-complete.csv: %ld : %@", i+1, self.currentLine, fullAddressLowercased);
         }
         
     }
