@@ -48,21 +48,17 @@
     }
 }
 
-//- (void)parser:(CHCSVParser *)parser didBeginLine:(NSUInteger)recordNumber {
-//    if (parser == self.ppCompleteParser) {
-//        self.currentLine = recordNumber;
-//    } else {
-//
-//    }
-//}
-//
-//- (void)parser:(CHCSVParser *)parser didEndLine:(NSUInteger)recordNumber {
-//    if (parser == self.combinedParser) {
-//        NSLog(@"CombinedParser Line#: %ld, \"%@\"",recordNumber, self.currentAddress);
-//    } else {
-//
-//    }
-//}
+- (void)parser:(CHCSVParser *)parser didBeginLine:(NSUInteger)recordNumber {
+    if (parser == self.ppCompleteParser) {
+        self.currentLine = recordNumber;
+    }
+}
+
+- (void)parser:(CHCSVParser *)parser didEndLine:(NSUInteger)recordNumber {
+    if (parser == self.combinedParser) {
+        // NSLog(@"CombinedParser Line#: %ld, \"%@\"",recordNumber, self.currentAddress);
+    }
+}
 
 - (void)parserDidEndDocument:(CHCSVParser *)parser {
     if (parser == self.combinedParser) {
