@@ -83,8 +83,8 @@
                 NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:&error];
                 NSString *trimmedString = [regex stringByReplacingMatchesInString:fieldString options:0 range:NSMakeRange(0, [fieldString length]) withTemplate:@" "];
                 
-                self.currentAddress = [trimmedString substringWithRange:NSMakeRange(1, [trimmedString length] - 2)];
-                [self.combinedFullAddresses addObject:[trimmedString substringWithRange:NSMakeRange(1, [trimmedString length] - 2)]];
+                self.currentAddress = [trimmedString stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                [self.combinedFullAddresses addObject:self.currentAddress];
             }
         }
     } else {
