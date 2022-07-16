@@ -12,9 +12,9 @@
     // Extract data from combined.csv (3,442,048)
 @property (strong, nonatomic) NSMutableArray *combinedAll;
 @property (strong, nonatomic) NSString *combinedCurrent;
+@property (strong, nonatomic) NSMutableArray *combinedResult;
 
     // Find matches from pp-complete.csv (27,176,256)
-@property (strong, nonatomic) NSMutableArray *ppCompleteAll;
 @property (strong, nonatomic) NSMutableString *ppCompleteCurrent;
 
 @property (strong, nonatomic) NSString *address1;
@@ -34,8 +34,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     self.combinedAll = [[NSMutableArray alloc] init];
     self.combinedCurrent = nil;
+    self.combinedResult = [[NSMutableArray alloc] init];
     
-    self.ppCompleteAll = [[NSMutableArray alloc] init];
     self.ppCompleteCurrent = [[NSMutableString alloc] init];
     
     self.address1 = nil;
@@ -53,7 +53,6 @@
     self.ppCompleteParser.delegate = self;
     
     [self.combinedParser parse];
-    // [self.ppCompleteParser parse];
     
     return YES;
 }
@@ -85,6 +84,7 @@
 - (void)parserDidEndDocument:(CHCSVParser *)parser {
     if (parser == self.combinedParser) {
         NSLog(@"End combinedParser");
+        [self.ppCompleteParser parse];
     } else {
         NSLog(@"End ppCompleteParser");
     }
@@ -144,21 +144,25 @@
         
             NSError *error = nil;
             NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"  +" options:NSRegularExpressionCaseInsensitive error:&error];
-            self.ppCompleteCurrent = [NSMutableString stringWithString:[[regex stringByReplacingMatchesInString:self.ppCompleteCurrent options:0 range:NSMakeRange(0, [self.ppCompleteCurrent length]) withTemplate:@" "] lowercaseString]];
+            self.ppCompleteCurrent = [NSMutableString stringWithString:[regex stringByReplacingMatchesInString:self.ppCompleteCurrent options:0 range:NSMakeRange(0, [self.ppCompleteCurrent length]) withTemplate:@" "]];
+            
+            [self checkAddress];
+            
+            self.ppCompleteCurrent = [[NSMutableString alloc] init];
         }
     }
     
     return;
 }
 
-//- (void)checkAddress {
-//    for (NSUInteger i = 1; i <= [self.combinedAll count]; i++) {
-//        if ([combinedFullAddressLowercased isEqualToString:fullAddressLowercased]) {
-//             NSLog(@"combined.csv: %ld, pp-complete.csv: %ld : %@", i+1, self.ppCompleteCurrentLine, fullAddressLowercased);
-//        }
-//    }
-//
-//    self.ppCompleteCurrent = [[NSMutableString alloc] init];
-//}
+- (void)checkAddress {
+    for (long i = 1; i <= [self.combinedAll count]; i++) {
+        NSString *combinedAddressLowercased = [self.combinedAll[i-1] lowercaseString];
+        NSString *ppAddressLowercased = [self.ppCompleteCurrent lowercaseString];
+        if ([combinedAddressLowercased isEqualToString:ppAddressLowercased]) {
+            [self.combinedResult addObject:[NSNumber numberWithLong:i]];
+        }
+    }
+}
 
 @end
